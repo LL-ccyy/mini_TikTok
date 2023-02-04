@@ -17,6 +17,12 @@ type UserResponse struct {
 	User User `json:"user"`
 }
 
+type ErrorResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg,omitempty"`
+	Error      string `json:"error"`
+}
+
 // DataList 带有总数的Data结构
 type DataList struct {
 	Item  interface{} `json:"item"`

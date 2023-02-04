@@ -40,6 +40,7 @@ func Register(c *gin.Context) {
 	//password := c.Query("password")
 	if err := c.ShouldBind(&userRegisterService); err == nil {
 		res := userRegisterService.Register()
+		fmt.Println("userRegisterService=", userRegisterService)
 		c.JSON(200, res)
 	} else {
 		fmt.Println(err)
@@ -48,30 +49,7 @@ func Register(c *gin.Context) {
 	}
 }
 
-//func Register(c *gin.Context) {
-//	username := c.Query("username")
-//	password := c.Query("password")
-//
-//	token := username + password
-//
-//	if _, exist := usersLoginInfo[token]; exist {
-//  654332
-//	} else {
-//		atomic.AddInt64(&userIdSequence, 1)
-//		newUser := User{
-//			Id:   userIdSequence,
-//			Name: username,
-//		}
-//		usersLoginInfo[token] = newUser
-//		c.JSON(http.StatusOK, UserLoginResponse{
-//			Response: Response{StatusCode: 0},
-//			UserId:   userIdSequence,
-//			Token:    username + password,
-//		})
-//	}
-//}
-
-func UserLogin(c *gin.Context) {
+func Login(c *gin.Context) {
 	var userLoginService service.UserService
 	if err := c.ShouldBind(&userLoginService); err == nil {
 		res := userLoginService.Login()
@@ -79,25 +57,6 @@ func UserLogin(c *gin.Context) {
 	} else {
 		c.JSON(400, ErrorResponse(err))
 		util.LogrusObj.Info(err)
-	}
-}
-
-func Login(c *gin.Context) {
-	username := c.Query("username")
-	password := c.Query("password")
-
-	token := username + password
-
-	if user, exist := usersLoginInfo[token]; exist {
-		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: Response{StatusCode: 0},
-			UserId:   user.Id,
-			Token:    token,
-		})
-	} else {
-		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-		})
 	}
 }
 
