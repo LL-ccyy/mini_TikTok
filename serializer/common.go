@@ -2,11 +2,19 @@ package serializer
 
 // Response 基础序列化器
 type Response struct {
-	StatusCode int         `json:"status"`
-	Data       interface{} `json:"data"`
-	StatusMsg  string      `json:"msg"`
-	Error      string      `json:"error"`
-	Token      string      `json:"token"`
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg,omitempty"`
+}
+
+type UserLoginResponse struct {
+	Response
+	UserId int64  `json:"user_id,omitempty"`
+	Token  string `json:"token"`
+}
+
+type UserResponse struct {
+	Response
+	User User `json:"user"`
 }
 
 // DataList 带有总数的Data结构
@@ -25,16 +33,4 @@ type TokenData struct {
 type TrackedErrorResponse struct {
 	Response
 	TrackID string `json:"track_id"`
-}
-
-// BulidListResponse 带有总数的列表构建器
-func BuildListResponse(items interface{}, total uint) Response {
-	return Response{
-		StatusCode: 200,
-		Data: DataList{
-			Item:  items,
-			Total: total,
-		},
-		StatusMsg: "ok",
-	}
 }

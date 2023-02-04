@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
+var jwtSecret = []byte(os.Getenv("LL_ccyy"))
 
 type Claims struct {
 	Id        uint   `json:"id"`
@@ -24,8 +24,9 @@ func GenerateToken(id uint, username string, authority int) (string, error) {
 		Username:  username,
 		Authority: authority,
 		StandardClaims: jwt.StandardClaims{
+			NotBefore: time.Now().Unix(),
 			ExpiresAt: expireTime.Unix(),
-			Issuer:    "to-do-list",
+			Issuer:    "ccyy",
 		},
 	}
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

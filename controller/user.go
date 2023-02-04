@@ -71,6 +71,17 @@ func Register(c *gin.Context) {
 //	}
 //}
 
+func UserLogin(c *gin.Context) {
+	var userLoginService service.UserService
+	if err := c.ShouldBind(&userLoginService); err == nil {
+		res := userLoginService.Login()
+		c.JSON(200, res)
+	} else {
+		c.JSON(400, ErrorResponse(err))
+		util.LogrusObj.Info(err)
+	}
+}
+
 func Login(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
