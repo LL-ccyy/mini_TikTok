@@ -3,12 +3,14 @@ package serializer
 import "Minimalist_TikTok/model"
 
 // Response 基础序列化器
+// 投稿接口、点赞操作、关注操作、发送消息
 type Response struct {
 	StatusCode int32  `json:"status_code"`
 	StatusMsg  string `json:"status_msg,omitempty"`
 	Error      string `json:"error"`
 }
 
+// 注册、登录
 type UserLoginResponse struct {
 	Response
 	UserId int64  `json:"user_id,omitempty"`
@@ -27,26 +29,43 @@ type ErrorResponse struct {
 }
 
 type SearchIDResponse struct {
-	StatusCode int32       `json:"status_code"`
-	StatusMsg  string      `json:"status_msg,omitempty"`
-	Error      string      `json:"error"`
-	Data       interface{} `json:"data"`
+	StatusCode int32      `json:"status_code"`
+	StatusMsg  string     `json:"status_msg,omitempty"`
+	Error      string     `json:"error"`
+	Data       model.User `json:"data"`
 }
 
-// DataList 带有总数的Data结构
-type DataList struct {
-	Item  interface{} `json:"item"`
-	Total uint        `json:"total"`
+// 视频流接口、发布列表、喜欢列表
+type FeedResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg,omitempty"`
+	Nexttime   int32  `json:"nexttime"`
+	// vedio_list
 }
 
-// TokenData 带有token的Data结构
-type TokenData struct {
-	User  interface{} `json:"user"`
-	Token string      `json:"token"`
+// 评论操作
+type CommentVResponse struct {
+	StatusCode int32         `json:"status_code"`
+	StatusMsg  string        `json:"status_msg,omitempty"`
+	Comment    model.Comment `json:"comment"`
 }
 
-// TrackedErrorResponse 有追踪信息的错误反应
-type TrackedErrorResponse struct {
-	Response
-	TrackID string `json:"track_id"`
+// 评论列表
+type CommentListResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg,omitempty"`
+	//	comment_list
+}
+
+// 关注、粉丝、好友列表
+type FollowListResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg,omitempty"`
+	//	user_list
+}
+
+type ChatRecordResponse struct {
+	StatusCode int32  `json:"status_code"`
+	StatusMsg  string `json:"status_msg,omitempty"`
+	// message_list
 }
