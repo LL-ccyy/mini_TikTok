@@ -1,9 +1,12 @@
 package serializer
 
+import "Minimalist_TikTok/model"
+
 // Response 基础序列化器
 type Response struct {
 	StatusCode int32  `json:"status_code"`
 	StatusMsg  string `json:"status_msg,omitempty"`
+	Error      string `json:"error"`
 }
 
 type UserLoginResponse struct {
@@ -14,13 +17,20 @@ type UserLoginResponse struct {
 
 type UserResponse struct {
 	Response
-	User User `json:"user"`
+	User model.User `json:"user"`
 }
 
 type ErrorResponse struct {
 	StatusCode int32  `json:"status_code"`
 	StatusMsg  string `json:"status_msg,omitempty"`
 	Error      string `json:"error"`
+}
+
+type SearchIDResponse struct {
+	StatusCode int32       `json:"status_code"`
+	StatusMsg  string      `json:"status_msg,omitempty"`
+	Error      string      `json:"error"`
+	Data       interface{} `json:"data"`
 }
 
 // DataList 带有总数的Data结构

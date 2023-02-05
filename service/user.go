@@ -14,6 +14,13 @@ type UserService struct {
 	Password string `form:"password" json:"password" binding:"required,min=5,max=16" example:"FanOne666"`
 }
 
+// 查询用户ID的服务
+type SearchIDService struct {
+	Id        uint   `json:"id"`
+	Username  string `json:"username"`
+	Authority int    `json:"authority"`
+}
+
 func (service *UserService) Register() *serializer.UserLoginResponse {
 	var user model.User
 	var count int64
@@ -86,6 +93,7 @@ func (service *UserService) Login() *serializer.UserLoginResponse {
 		}
 	}
 	token, err := util.GenerateToken(user.ID, service.UserName, 0)
+	fmt.Println("登录的token", token)
 	//加密出错
 	if err != nil {
 		util.LogrusObj.Info(err)
@@ -103,5 +111,23 @@ func (service *UserService) Login() *serializer.UserLoginResponse {
 		},
 		UserId: int64(user.ID),
 		Token:  token,
+	}
+}
+
+func (service *SearchIDService) SearchById(id uint) serializer.SearchIDResponse {
+	var user model.User
+	err := model.DB.Where("Id = ?", id).Find(&user).Error
+	if err != nil {
+		util.LogrusObj.Info(err)
+		return serializer.SearchIDResponse{
+			StatusCode: 0,
+			StatusMsg:  "错误",
+			Error:      err.Error(),
+		}
+	}
+	return serializer.SearchIDResponse{
+		StatusCode: 1,
+		StatusMsg:  "查询成功",
+		Data:       user,
 	}
 }

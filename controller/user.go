@@ -5,7 +5,6 @@ import (
 	"Minimalist_TikTok/service"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // usersLoginInfo use map to store user info, and key is username+password for demo
@@ -21,7 +20,7 @@ var usersLoginInfo = map[string]User{
 	},
 }
 
-var userIdSequence = int64(1)
+//var userIdSequence = int64(1)
 
 type UserLoginResponse struct {
 	Response
@@ -61,16 +60,14 @@ func Login(c *gin.Context) {
 }
 
 func UserInfo(c *gin.Context) {
-	token := c.Query("token")
-
-	if user, exist := usersLoginInfo[token]; exist {
-		c.JSON(http.StatusOK, UserResponse{
-			Response: Response{StatusCode: 0},
-			User:     user,
-		})
+	var userinfo service.SearchIDService
+	claim, _ := util.ParseToken(c.GetHeader("Authorization"))
+	fmt.Println("claim=", claim)
+	if err := c.ShouldBind(&userinfo); err == nil {
+		res := userinfo.SearchById(claim.Id)
+		c.JSON(200, res)
 	} else {
-		c.JSON(http.StatusOK, UserResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-		})
+		c.JSON(400, ErrorResponse(err))
+		util.LogrusObj.Info(err)
 	}
 }
