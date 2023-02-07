@@ -8,8 +8,9 @@ import (
 )
 
 type PublishService struct {
-	Data  string `json:"data"`
-	Title string `json:"title"`
+}
+
+type PublishListService struct {
 }
 
 //func UserInfo(c *gin.Context) {
@@ -70,4 +71,10 @@ func Publish(User model.User, Uid uint, PlayUrl string, CoverUrl string, Title s
 		StatusCode: 1,
 		StatusMsg:  "投稿成功",
 	}
+}
+
+func PublishList(uid uint) serializer.FeedResponse {
+	var videos []model.Video
+	model.DB.Model(&model.Video{}).Preload("User").Where("uid=", uid).Order("created_at DESC").Find(&videos)
+	return serializer.FeedResponse{}
 }

@@ -20,7 +20,7 @@ func initRouter(r *gin.Engine) {
 	{
 		apiRouter.GET("/user/", controller.UserInfo)
 		apiRouter.POST("/publish/action/", controller.Publish)
-		//apiRouter.GET("/publish/list/", controller.PublishList)
+		apiRouter.GET("/publish/list/", controller.PublishList)
 		//
 		//// extra apis - I
 		//apiRouter.POST("/favorite/action/", controller.FavoriteAction)

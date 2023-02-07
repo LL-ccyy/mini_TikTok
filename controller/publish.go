@@ -40,7 +40,6 @@ func Publish(c *gin.Context) {
 		})
 	}
 
-	//获取文件名带后缀
 	filename := filepath.Base(data.Filename)
 	filenameWithSuffix := filepath.Ext(filename)
 	filenameOnly := strings.TrimSuffix(filenameWithSuffix, filename)
@@ -103,11 +102,15 @@ func Publish(c *gin.Context) {
 }
 
 // PublishList all users have same publish video list
-//func PublishList(c *gin.Context) {
-//	c.JSON(http.StatusOK, VideoListResponse{
-//		Response: Response{
-//			StatusCode: 0,
-//		},
-//		VideoList: DemoVideos,
-//	})
-//}
+func PublishList(c *gin.Context) {
+	claim, _ := util.ParseToken(c.GetHeader("Authorization"))
+	res := service.PublishList(claim.Id)
+	c.JSON(http.StatusOK, res)
+
+	//c.JSON(http.StatusOK, VideoListResponse{
+	//	Response: Response{
+	//		StatusCode: 0,
+	//	},
+	//	VideoList: DemoVideos,
+	//})
+}

@@ -8,9 +8,7 @@ import (
 )
 
 func Register(c *gin.Context) {
-	var userRegisterService service.UserService //相当于创建了一个UserRegisterService对象，调用这个对象中的Register方法。
-	//username := c.Query("username")
-	//password := c.Query("password")
+	var userRegisterService service.UserService
 	if err := c.ShouldBind(&userRegisterService); err == nil {
 		res := userRegisterService.Register()
 		fmt.Println("userRegisterService=", userRegisterService)
@@ -37,6 +35,7 @@ func UserInfo(c *gin.Context) {
 	var userinfo service.SearchIDService
 	claim, _ := util.ParseToken(c.GetHeader("Authorization"))
 	fmt.Println("claim=", claim)
+	//这块有问题
 	if err := c.ShouldBind(&userinfo); err == nil {
 		res := userinfo.SearchById(claim.Id)
 		c.JSON(200, res)
