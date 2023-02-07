@@ -37,10 +37,10 @@ type SearchIDResponse struct {
 
 // 视频流接口、发布列表、喜欢列表
 type FeedResponse struct {
-	StatusCode int32  `json:"status_code"`
-	StatusMsg  string `json:"status_msg,omitempty"`
-	Nexttime   int32  `json:"nexttime"`
-	// vedio_list
+	StatusCode int32         `json:"status_code"`
+	StatusMsg  string        `json:"status_msg,omitempty"`
+	Nexttime   int32         `json:"nexttime"`
+	VideoList  []model.Video `json:"video_list"`
 }
 
 // 评论操作
@@ -52,20 +52,20 @@ type CommentVResponse struct {
 
 // 评论列表
 type CommentListResponse struct {
-	StatusCode int32  `json:"status_code"`
-	StatusMsg  string `json:"status_msg,omitempty"`
-	//	comment_list
+	StatusCode  int32           `json:"status_code"`
+	StatusMsg   string          `json:"status_msg,omitempty"`
+	CommentList []model.Comment `json:"comment_list"`
 }
 
 // 关注、粉丝、好友列表
 type FollowListResponse struct {
-	StatusCode int32  `json:"status_code"`
-	StatusMsg  string `json:"status_msg,omitempty"`
-	//	user_list
+	StatusCode int32        `json:"status_code"`
+	StatusMsg  string       `json:"status_msg,omitempty"`
+	UserList   []model.User `json:"user_list"`
 }
 
 type ChatRecordResponse struct {
-	StatusCode int32  `json:"status_code"`
-	StatusMsg  string `json:"status_msg,omitempty"`
-	// message_list
+	StatusCode  int32           `json:"status_code"`
+	StatusMsg   string          `json:"status_msg,omitempty"`
+	MessageList []model.Message `json:"message_list"`
 }

@@ -16,9 +16,7 @@ type UserService struct {
 
 // 查询用户ID的服务
 type SearchIDService struct {
-	Id        uint   `json:"id"`
-	Username  string `json:"username"`
-	Authority int    `json:"authority"`
+	Id uint `json:"id"`
 }
 
 func (service *UserService) Register() *serializer.UserLoginResponse {
