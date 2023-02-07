@@ -12,7 +12,8 @@ func JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var code int
 		code = 0
-		token := c.GetHeader("Authorization")
+		//token := c.GetHeader("Authorization")
+		token := c.Query("token")
 		fmt.Println("token=", token)
 		if token == "" { //无token
 			code = 1

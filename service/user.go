@@ -16,13 +16,14 @@ type UserService struct {
 
 // 查询用户ID的服务
 type SearchIDService struct {
-	Id uint `json:"id"`
+	Id    uint   `json:"user_id"`
+	Token string `json:"token"`
 }
 
 func (service *UserService) Register() *serializer.UserLoginResponse {
 	var user model.User
 	var count int64
-	model.DB.Model(&model.User{}).Where("name=?", service.UserName).First(&user).Count(&count)
+	model.DB.Model(&model.User{}).Where("user_name=?", service.UserName).First(&user).Count(&count)
 	// 表单验证
 	fmt.Println("count=", count)
 	if count == 1 {
@@ -83,8 +84,6 @@ func (service *UserService) Login() *serializer.UserLoginResponse {
 	}
 	//解密后密码错误
 	if !user.CheckPassword(service.Password) {
-		fmt.Println("user.PasswordDigest=1?", user.PasswordDigest)
-		fmt.Println("password=", service.Password)
 		return &serializer.UserLoginResponse{
 			Response: serializer.Response{
 				StatusCode: 1,
@@ -114,9 +113,9 @@ func (service *UserService) Login() *serializer.UserLoginResponse {
 	}
 }
 
-func (service *SearchIDService) SearchById(id uint) serializer.SearchIDResponse {
+func (service *SearchIDService) SearchById() serializer.SearchIDResponse {
 	var user model.User
-	err := model.DB.Where("Id = ?", id).Find(&user).Error
+	err := model.DB.Model(&model.User{}).Where("id = ?", service.Id).Find(&user).Error
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.SearchIDResponse{

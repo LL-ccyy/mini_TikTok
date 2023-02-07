@@ -16,7 +16,7 @@ type User struct {
 }
 
 // 加密
-func (user User) SetPassword(password string) error {
+func (user *User) SetPassword(password string) error {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {
 		return err
@@ -26,7 +26,7 @@ func (user User) SetPassword(password string) error {
 }
 
 // 验证密码
-func (user User) CheckPassword(password string) bool {
+func (user *User) CheckPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordDigest), []byte(password))
 	fmt.Println("user.PasswordDigest=", user.PasswordDigest)
 	fmt.Println(bcrypt.CompareHashAndPassword([]byte(user.PasswordDigest), []byte(password)))

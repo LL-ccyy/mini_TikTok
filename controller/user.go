@@ -33,11 +33,12 @@ func Login(c *gin.Context) {
 
 func UserInfo(c *gin.Context) {
 	var userinfo service.SearchIDService
-	claim, _ := util.ParseToken(c.GetHeader("Authorization"))
-	fmt.Println("claim=", claim)
-	//这块有问题
+	//token := c.Query("token")
+	//claim, _ := util.ParseToken(token)
+	//fmt.Println("claim=", claim)
+	//
 	if err := c.ShouldBind(&userinfo); err == nil {
-		res := userinfo.SearchById(claim.Id)
+		res := userinfo.SearchById()
 		c.JSON(200, res)
 	} else {
 		c.JSON(400, ErrorResponse(err))
