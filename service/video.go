@@ -22,11 +22,6 @@ type FeedService struct {
 	Token      string `json:"token"`
 }
 
-const (
-	PCBeforeUrl      = "http://169.254.163.8:8080/static/"
-	AndroidBeforeUrl = "http://192.168.0.103:8080/static/"
-)
-
 //func UserInfo(c *gin.Context) {
 //	var userinfo service.SearchIDService
 //	claim, _ := util.ParseToken(c.GetHeader("Authorization"))
@@ -100,8 +95,8 @@ func (service *PublishListService) PublishList() serializer.FeedResponse {
 	model.DB.Model(&model.Video{}).Preloads("User").Where("uid=?", claim.Id).Order("created_at desc").Find(&videos)
 	VideoLen := len(videos)
 	for i := 0; i < VideoLen; i++ {
-		videos[i].PlayUrl = AndroidBeforeUrl + videos[i].PlayUrl
-		videos[i].CoverUrl = AndroidBeforeUrl + videos[i].CoverUrl
+		videos[i].PlayUrl = util.AndroidBeforeUrl + videos[i].PlayUrl
+		videos[i].CoverUrl = util.AndroidBeforeUrl + videos[i].CoverUrl
 	}
 	fmt.Println("data", videos)
 	return serializer.FeedResponse{
@@ -144,8 +139,8 @@ func (service *FeedService) Feed() serializer.FeedResponse {
 	fmt.Println(time.Unix(data/1000, 0))
 	fmt.Println("VideoLen", VideoLen)
 	for i := 0; i < VideoLen; i++ {
-		videos[i].PlayUrl = AndroidBeforeUrl + videos[i].PlayUrl
-		videos[i].CoverUrl = AndroidBeforeUrl + videos[i].CoverUrl
+		videos[i].PlayUrl = util.AndroidBeforeUrl + videos[i].PlayUrl
+		videos[i].CoverUrl = util.AndroidBeforeUrl + videos[i].CoverUrl
 	}
 	return serializer.FeedResponse{
 		StatusCode: 0,

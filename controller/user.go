@@ -14,7 +14,6 @@ func Register(c *gin.Context) {
 		fmt.Println("userRegisterService=", userRegisterService)
 		c.JSON(200, res)
 	} else {
-		fmt.Println(err)
 		c.JSON(400, ErrorResponse(err))
 		util.LogrusObj.Info(err)
 	}
