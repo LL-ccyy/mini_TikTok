@@ -69,12 +69,13 @@ func Publish(c *gin.Context) {
 	//fmt.Println("filenameWithSuffix=",filenameWithSuffix)
 	//fmt.Println("filenameOnly=",filenameOnly)
 	//fmt.Println("saveImg=",saveImg)
-	ffm_ima, err := util.GetSnapshot(saveFile, saveImg, 1)
+	_, err = util.GetSnapshot(saveFile, saveImg, 1)
 	if err != nil {
 		fmt.Println("截取视频封面出错，", err)
 	}
+	finalImageName := finalName + ".png"
 
-	res := service.Publish(user, claim.Id, saveFile, ffm_ima, title)
+	res := service.Publish(user, claim.Id, finalName, finalImageName, title)
 
 	c.JSON(http.StatusOK, res)
 
