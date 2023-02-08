@@ -16,8 +16,8 @@ type UserService struct {
 
 // 查询用户ID的服务
 type SearchIDService struct {
-	Id    uint   `json:"user_id"`
-	Token string `json:"token"`
+	Id    uint   `form:"user_id" json:"id"`
+	Token string `form:"token" json:"token"`
 }
 
 func (service *UserService) Register() *serializer.UserLoginResponse {
@@ -53,6 +53,7 @@ func (service *UserService) Register() *serializer.UserLoginResponse {
 		}
 	}
 	token, _ := util.GenerateToken(user.ID, user.UserName, 0)
+	fmt.Println(" int64(user.ID)=", int64(user.ID))
 	return &serializer.UserLoginResponse{
 		Response: serializer.Response{StatusCode: 0},
 		UserId:   int64(user.ID),
@@ -103,6 +104,7 @@ func (service *UserService) Login() *serializer.UserLoginResponse {
 			},
 		}
 	}
+	fmt.Println(" int64(user.ID)=", int64(user.ID))
 	return &serializer.UserLoginResponse{
 		Response: serializer.Response{
 			StatusCode: 0,
@@ -119,14 +121,14 @@ func (service *SearchIDService) SearchById() serializer.SearchIDResponse {
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.SearchIDResponse{
-			StatusCode: 0,
+			StatusCode: 1,
 			StatusMsg:  "错误",
 			Error:      err.Error(),
 		}
 	}
 	return serializer.SearchIDResponse{
-		StatusCode: 1,
+		StatusCode: 0,
 		StatusMsg:  "查询成功",
-		Data:       user,
+		User:       user,
 	}
 }

@@ -39,6 +39,7 @@ func UserInfo(c *gin.Context) {
 	//
 	if err := c.ShouldBind(&userinfo); err == nil {
 		res := userinfo.SearchById()
+		fmt.Println("res=", res)
 		c.JSON(200, res)
 	} else {
 		c.JSON(400, ErrorResponse(err))

@@ -11,6 +11,8 @@ type PublishService struct {
 }
 
 type PublishListService struct {
+	Token string `form:"token",json:"token"`
+	ID    string `form:"user_id",json:"user_id"`
 }
 
 //func UserInfo(c *gin.Context) {
@@ -62,19 +64,21 @@ func Publish(User model.User, Uid uint, PlayUrl string, CoverUrl string, Title s
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.Response{
-			StatusCode: 0,
+			StatusCode: 1,
 			StatusMsg:  "投稿失败",
 			Error:      err.Error(),
 		}
 	}
 	return serializer.Response{
-		StatusCode: 1,
-		StatusMsg:  "投稿成功",
+		StatusCode: 0,
+		StatusMsg:  video.Title + " uploaded successfully",
 	}
 }
 
-func PublishList(uid uint) serializer.FeedResponse {
-	var videos []model.Video
-	model.DB.Model(&model.Video{}).Preload("User").Where("uid=", uid).Order("created_at DESC").Find(&videos)
+func (service *PublishListService) PublishList() serializer.FeedResponse {
+	//var videos []model.Video
+	fmt.Println("service.id=", service.ID)
+	//fmt.Println("s.t=",service.Token)
+	//model.DB.Model(&model.Video{}).Preload("User").Where("uid=", service.ID).Order("created_at DESC").Find(&videos)
 	return serializer.FeedResponse{}
 }

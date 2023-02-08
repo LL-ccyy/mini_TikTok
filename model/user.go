@@ -8,11 +8,11 @@ import (
 
 type User struct {
 	gorm.Model
-	UserName       string `json:"name,omitempty"`
+	UserName       string `json:"name,omitempty",gorm:"column:user_name"`
 	PasswordDigest string `json:"password,omitempty"`
-	FollowCount    int64  `json:"follow_count,omitempty"`
-	FollowerCount  int64  `json:"follower_count,omitempty"`
-	IsFollow       bool   `json:"is_follow,omitempty"`
+	FollowCount    int64  `json:"follow_count,omitempty",gorm:"default:0"`
+	FollowerCount  int64  `json:"follower_count,omitempty",gorm:"default:0"`
+	IsFollow       bool   `json:"is_follow,omitempty",gorm:"default:false"`
 }
 
 // 加密

@@ -32,7 +32,7 @@ type SearchIDResponse struct {
 	StatusCode int32      `json:"status_code"`
 	StatusMsg  string     `json:"status_msg,omitempty"`
 	Error      string     `json:"error"`
-	Data       model.User `json:"data"`
+	User       model.User `json:"user"`
 }
 
 // 视频流接口、发布列表、喜欢列表

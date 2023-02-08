@@ -8,12 +8,12 @@ import (
 )
 
 // JWT token验证中间件
-func JWT() gin.HandlerFunc {
+func JWTForm() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var code int
 		code = 0
 		//token := c.GetHeader("Authorization")
-		token := c.Query("token")
+		token := c.PostForm("token")
 		fmt.Println("token?=", token)
 		if token == "" { //无token
 			code = 1

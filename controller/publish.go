@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
-	"strings"
 )
 
 // Publish check token then save upload file to public directory
@@ -40,14 +39,37 @@ func Publish(c *gin.Context) {
 		})
 	}
 
+	fmt.Println("title=", title)
+	//fmt.Println("data=",data)
+
+	//filename := "device/sdk/CMakeLists.txt"
+	//filenameall := path.Base(filename)
+	//filesuffix := path.Ext(filename)
+	//fileprefix := filenameall[0:len(filenameall) - len(filesuffix)]
+	////fileprefix, err := strings.TrimSuffix(filenameall, filesuffix)
+	//
+	//fmt.Println("file name:", filenameall)
+	//fmt.Println("file prefix:", fileprefix)
+	//fmt.Println("file suffix:", filesuffix)
+	//
+	//file name: CMakeLists.txt
+	//file prefix: CMakeLists
+	//file suffix: .txt
+
 	filename := filepath.Base(data.Filename)
-	filenameWithSuffix := filepath.Ext(filename)
-	filenameOnly := strings.TrimSuffix(filenameWithSuffix, filename)
 	user, nil := publishservice.SearchByUid(claim.Id)
 	finalName := fmt.Sprintf("%d_%s", user.ID, filename)
+	filenameWithSuffix := filepath.Ext(finalName)
+	//filenameOnly := strings.TrimSuffix(filename, filenameWithSuffix)
+	filenameOnly := finalName[0 : len(finalName)-len(filenameWithSuffix)]
 	saveFile := filepath.Join("./public/", finalName)
+	saveImg := filepath.Join("./public/", filenameOnly)
 
-	ffm_ima, err := util.GetSnapshot(saveFile, filenameOnly, 1)
+	//fmt.Println("saveFile=",saveFile)
+	//fmt.Println("filenameWithSuffix=",filenameWithSuffix)
+	//fmt.Println("filenameOnly=",filenameOnly)
+	//fmt.Println("saveImg=",saveImg)
+	ffm_ima, err := util.GetSnapshot(saveFile, saveImg, 1)
 	if err != nil {
 		fmt.Println("截取视频封面出错，", err)
 	}
@@ -103,9 +125,18 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
-	claim, _ := util.ParseToken(c.GetHeader("Authorization"))
-	res := service.PublishList(claim.Id)
-	c.JSON(http.StatusOK, res)
+	var publishService service.PublishListService
+	if err := c.ShouldBind(&publishService); err == nil {
+		res := publishService.PublishList()
+		c.JSON(200, res)
+	} else {
+		c.JSON(400, ErrorResponse(err))
+		util.LogrusObj.Info(err)
+	}
+
+	//claim, _ := util.ParseToken(c.GetHeader("Authorization"))
+	//res := service.PublishList(claim.Id)
+	//c.JSON(http.StatusOK, res)
 
 	//c.JSON(http.StatusOK, VideoListResponse{
 	//	Response: Response{

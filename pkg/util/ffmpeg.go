@@ -14,17 +14,17 @@ func GetSnapshot(videoPath, snapshotPath string, frameNum int) (snapshotName str
 	buf := bytes.NewBuffer(nil)
 	err = ffmpeg.Input(videoPath).Filter("select", ffmpeg.Args{fmt.Sprintf("gte(n,%d)", frameNum)}).Output("pipe:", ffmpeg.KwArgs{"vframes": 1, "format": "image2", "vcodec": "mjpeg"}).WithOutput(buf, os.Stdout).Run()
 	if err != nil {
-		log.Fatal("生成缩略图失败：", err)
+		log.Fatal("生成缩略图失败1：", err)
 		return "", err
 	}
 	img, err := imaging.Decode(buf)
 	if err != nil {
-		log.Fatal("生成缩略图失败：", err)
+		log.Fatal("生成缩略图失败2：", err)
 		return "", err
 	}
 	err = imaging.Save(img, snapshotPath+".png")
 	if err != nil {
-		log.Fatal("生成缩略图失败：", err)
+		log.Fatal("生成缩略图失败3：", err)
 		return "", err
 	}
 	names := strings.Split(snapshotPath, "/")
