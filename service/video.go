@@ -92,7 +92,16 @@ func (service *PublishListService) PublishList() serializer.FeedResponse {
 			StatusMsg:  "token解析错误",
 		}
 	}
-	model.DB.Model(&model.Video{}).Preloads("Author").Where("author_id=?", claim.Id).Order("created_at desc").Find(&videos)
+
+	err = model.DB.Model(&model.Video{}).Preloads("Author").Where("author_id=?", claim.Id).Order("created_at desc").Find(&videos).Error
+	if err != nil {
+		util.LogrusObj.Info(err)
+		return serializer.FeedResponse{
+			StatusCode: 1,
+			StatusMsg:  "video数据库查询错误",
+		}
+	}
+
 	VideoLen := len(videos)
 	for i := 0; i < VideoLen; i++ {
 		videos[i].PlayUrl = util.AndroidBeforeUrl + videos[i].PlayUrl
@@ -117,8 +126,9 @@ func (service *FeedService) Feed() serializer.FeedResponse {
 			StatusMsg:  "时间戳转化错误",
 		}
 	}
-	//未登录的情况
+	//登录时
 	if service.Token != "" {
+		//没有用到id信息
 		_, err := util.ParseToken(service.Token)
 		if err != nil {
 			util.LogrusObj.Info(err)
@@ -128,16 +138,23 @@ func (service *FeedService) Feed() serializer.FeedResponse {
 			}
 		}
 	}
-	model.DB.Model(&model.Video{}).Preload("Author").Where("created_at <= ?", time.Unix(data/1000, 0).Format(timeLayout)).Order("created_at desc").Limit(30).Find(&videos)
-	//model.DB.Model(&model.Video{}).Preloads("User").Order("created_at desc").Limit(30).Find(&videos)
-	fmt.Println("videos=", videos)
+
+	err = model.DB.Model(&model.Video{}).Preload("Author").Where("created_at <= ?", time.Unix(data/1000, 0).Format(timeLayout)).Order("created_at desc").Limit(30).Find(&videos).Error
+	if err != nil {
+		util.LogrusObj.Info(err)
+		return serializer.FeedResponse{
+			StatusCode: 1,
+			StatusMsg:  "video数据库查询错误",
+		}
+	}
 
 	VideoLen := len(videos)
-	fmt.Println("VideoLen", VideoLen)
+	//fmt.Println("VideoLen", VideoLen)
 	for i := 0; i < VideoLen; i++ {
 		videos[i].PlayUrl = util.AndroidBeforeUrl + videos[i].PlayUrl
 		videos[i].CoverUrl = util.AndroidBeforeUrl + videos[i].CoverUrl
 	}
+
 	return serializer.FeedResponse{
 		StatusCode: 0,
 		StatusMsg:  "获取列表成功",
