@@ -1,6 +1,7 @@
 package model
 
 import (
+	"Minimalist_TikTok/pkg/util"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -12,7 +13,7 @@ var DB *gorm.DB
 func Database(connstring string) {
 	db, err := gorm.Open("mysql", connstring)
 	if err != nil {
-		panic(err)
+		util.LogrusObj.Info(err)
 	}
 	fmt.Println("数据库连接成功")
 	db.LogMode(true)

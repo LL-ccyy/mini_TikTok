@@ -5,14 +5,15 @@ import (
 	"Minimalist_TikTok/pkg/util"
 	"Minimalist_TikTok/serializer"
 	"fmt"
+	"time"
 )
 
 type CommentActionService struct {
-	Token       string `json:"token"`
-	VideoId     uint   `json:"video_id"`
-	ActionType  string `json:"action_type"`
-	CommentText string `json:"comment_text"`
-	CommentId   uint   `json:"comment_id"`
+	Token       string `form:"token",json:"token"`
+	VideoId     uint   `form:"video_id",json:"video_id"`
+	ActionType  string `form:"action_type",json:"action_type"`
+	CommentText string `form:"comment_text",json:"comment_text"`
+	CommentId   uint   `form:"comment_id",json:"comment_id"`
 }
 
 type CommentListService struct {
@@ -41,18 +42,35 @@ func (service *CommentActionService) CommentAction() serializer.CommentVResponse
 	switch service.ActionType {
 	case "1":
 		{
+			var commenter model.User
+			err = model.DB.Model(&model.User{}).Where("id=?", claims.Id).Find(&commenter).Error
+			if err != nil {
+				util.LogrusObj.Info(err)
+				return serializer.CommentVResponse{
+					StatusCode: 1,
+					StatusMsg:  "查找人失败",
+				}
+			}
 			comment := model.Comment{
-				UserID:  claims.Id,
-				VideoID: service.VideoId,
-				Content: service.CommentText,
+				CommenterID: claims.Id,
+				Commenter:   commenter,
+				VideoID:     service.VideoId,
+				Content:     service.CommentText,
+				CreateDate:  time.Now().Format("2006-01-02 15:04:05"),
 				//ID: service.CommentId,????
 			}
 			//var user model.User
 			//var video model.Video
 			//model.DB.Model(&model.User{}).Where("id = ?",claims.Id).Find(&user)
 			//model.DB.Model(&model.Video{}).Where("id = ?",service.VideoId).Find(&video)
-			model.DB.Model(&model.Comment{}).Create(&comment)
-
+			err = model.DB.Model(&model.Comment{}).Create(&comment).Error
+			if err != nil {
+				util.LogrusObj.Info(err)
+				return serializer.CommentVResponse{
+					StatusCode: 1,
+					StatusMsg:  "添加评论数据库操作失败",
+				}
+			}
 			return serializer.CommentVResponse{
 				StatusCode: 0,
 				StatusMsg:  "评论成功",
@@ -61,16 +79,21 @@ func (service *CommentActionService) CommentAction() serializer.CommentVResponse
 		}
 	case "2":
 		{
-
 			comment := model.Comment{
-				UserID:  claims.Id,
-				VideoID: service.VideoId,
-				Content: service.CommentText,
-				ID:      service.CommentId,
+				CommenterID: claims.Id,
+				VideoID:     service.VideoId,
+				Content:     service.CommentText,
+				ID:          service.CommentId,
 			}
 
-			model.DB.Model(&model.Comment{}).Where("id = ? ", service.CommentId).Delete(&comment)
-
+			err = model.DB.Model(&model.Comment{}).Where("id = ? ", service.CommentId).Delete(&comment).Error
+			if err != nil {
+				util.LogrusObj.Info(err)
+				return serializer.CommentVResponse{
+					StatusCode: 1,
+					StatusMsg:  "删除评论数据库操作失败",
+				}
+			}
 			return serializer.CommentVResponse{
 				StatusCode: 0,
 				StatusMsg:  "控评成功",
@@ -98,7 +121,14 @@ func (service *CommentListService) CommentList() serializer.CommentListResponse 
 		}
 	}
 
-	model.DB.Model(&model.Comment{}).Preload("Commenter").Where("video_id = ?", service.VideoID).Find(&commentsList)
+	err = model.DB.Model(&model.Comment{}).Preload("Commenter").Where("video_id = ?", service.VideoID).Find(&commentsList).Error
+	if err != nil {
+		util.LogrusObj.Info(err)
+		return serializer.CommentListResponse{
+			StatusCode: 1,
+			StatusMsg:  "评论数据库查找错误",
+		}
+	}
 
 	return serializer.CommentListResponse{
 		StatusCode:  0,
