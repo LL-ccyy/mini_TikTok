@@ -62,7 +62,7 @@ func Publish(User model.User, Uid uint, PlayUrl string, CoverUrl string, Title s
 	//var video model.Video
 	video := model.Video{
 		Author:   User,
-		Uid:      Uid,
+		AuthorID: Uid,
 		PlayUrl:  PlayUrl,
 		CoverUrl: CoverUrl,
 		Title:    Title,
@@ -92,7 +92,7 @@ func (service *PublishListService) PublishList() serializer.FeedResponse {
 			StatusMsg:  "token解析错误",
 		}
 	}
-	model.DB.Model(&model.Video{}).Preloads("User").Where("uid=?", claim.Id).Order("created_at desc").Find(&videos)
+	model.DB.Model(&model.Video{}).Preloads("Author").Where("author_id=?", claim.Id).Order("created_at desc").Find(&videos)
 	VideoLen := len(videos)
 	for i := 0; i < VideoLen; i++ {
 		videos[i].PlayUrl = util.AndroidBeforeUrl + videos[i].PlayUrl
@@ -110,10 +110,6 @@ func (service *FeedService) Feed() serializer.FeedResponse {
 	var videos []model.Video
 	timeLayout := "2006-01-02 15:04:05"
 	data, err := strconv.ParseInt(strconv.Itoa(service.LatestTime), 10, 64)
-	//fmt.Println(service.LatestTime)
-	//fmt.Println(time.Unix(data/1000, 0))
-	//data, _ := strconv.ParseInt(strconv.Itoa(1675861159772), 10, 64)
-	//datatime := time.Unix(data/1000, 0)
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.FeedResponse{
@@ -121,8 +117,8 @@ func (service *FeedService) Feed() serializer.FeedResponse {
 			StatusMsg:  "时间戳转化错误",
 		}
 	}
+	//未登录的情况
 	if service.Token != "" {
-		//关注没加
 		_, err := util.ParseToken(service.Token)
 		if err != nil {
 			util.LogrusObj.Info(err)
@@ -132,11 +128,11 @@ func (service *FeedService) Feed() serializer.FeedResponse {
 			}
 		}
 	}
-	model.DB.Model(&model.Video{}).Preloads("User").Where("created_at <= ?", time.Unix(data/1000, 0).Format(timeLayout)).Order("created_at desc").Limit(30).Find(&videos)
+	model.DB.Model(&model.Video{}).Preload("Author").Where("created_at <= ?", time.Unix(data/1000, 0).Format(timeLayout)).Order("created_at desc").Limit(30).Find(&videos)
 	//model.DB.Model(&model.Video{}).Preloads("User").Order("created_at desc").Limit(30).Find(&videos)
+	fmt.Println("videos=", videos)
 
 	VideoLen := len(videos)
-	fmt.Println(time.Unix(data/1000, 0))
 	fmt.Println("VideoLen", VideoLen)
 	for i := 0; i < VideoLen; i++ {
 		videos[i].PlayUrl = util.AndroidBeforeUrl + videos[i].PlayUrl

@@ -100,24 +100,6 @@ func (service *CommentListService) CommentList() serializer.CommentListResponse 
 
 	model.DB.Model(&model.Comment{}).Preload("Commenter").Where("video_id = ?", service.VideoID).Find(&commentsList)
 
-	//model.DB.Model(&model.Favourite{}).Where("user_id = ?",claim.Id).Find(&favouritevideos)
-	//
-	//var videosId []uint
-	//for _, v := range favouritevideos {
-	//	videosId=append(videosId,v.VideoID)
-	//}
-	//
-	//model.DB.Model(&model.Video{}).Where("id = ?",videosId).Find(&favouritevideosList)
-	//
-	//
-	////db.Where("name IN (?)", []string{"jinzhu", "jinzhu 2"})
-	//
-	//VideoLen := len(favouritevideosList)
-	//for i := 0; i < VideoLen; i++ {
-	//	favouritevideosList[i].PlayUrl = util.AndroidBeforeUrl + favouritevideosList[i].PlayUrl
-	//	favouritevideosList[i].CoverUrl = util.AndroidBeforeUrl + favouritevideosList[i].CoverUrl
-	//}
-	//fmt.Println("data", favouritevideosList)
 	return serializer.CommentListResponse{
 		StatusCode:  0,
 		StatusMsg:   "获取列表成功",

@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"Minimalist_TikTok/pkg/util"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"time"
 )
@@ -14,7 +13,7 @@ func JWT() gin.HandlerFunc {
 		code = 0
 		//token := c.GetHeader("Authorization")
 		token := c.Query("token")
-		fmt.Println("token?=", token)
+		//fmt.Println("token?=", token)
 		if token == "" { //无token
 			code = 1
 		} else {

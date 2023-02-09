@@ -73,7 +73,7 @@ func Publish(c *gin.Context) {
 	if err != nil {
 		fmt.Println("截取视频封面出错，", err)
 	}
-	finalImageName := finalName + ".png"
+	finalImageName := filenameOnly + ".png"
 
 	res := service.Publish(user, claim.Id, finalName, finalImageName, title)
 

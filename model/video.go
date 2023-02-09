@@ -5,7 +5,7 @@ import "github.com/jinzhu/gorm"
 type Video struct {
 	gorm.Model
 	Author        User   `json:"author"`
-	Uid           uint   `json:"uid;not null"`
+	AuthorID      uint   `json:"author_id;not null"`
 	PlayUrl       string `json:"play_url,omitempty"`
 	CoverUrl      string `json:"cover_url,omitempty"`
 	FavoriteCount int64  `json:"favorite_count,omitempty",gorm:"default:0"`
