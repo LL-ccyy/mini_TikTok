@@ -1,47 +1,55 @@
 package controller
 
-//type UserListResponse struct {
-//	Response
-//	UserList []User `json:"user_list"`
-//}
-//
-//// RelationAction no practical effect, just check if token is valid
-//func RelationAction(c *gin.Context) {
-//	token := c.Query("token")
-//
-//	if _, exist := usersLoginInfo[token]; exist {
-//		c.JSON(http.StatusOK, Response{StatusCode: 0})
-//	} else {
-//		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
-//	}
-//}
-//
-//// FollowList all users have same follow list
-//func FollowList(c *gin.Context) {
-//	c.JSON(http.StatusOK, UserListResponse{
-//		Response: Response{
-//			StatusCode: 0,
-//		},
-//		UserList: []User{DemoUser},
-//	})
-//}
-//
-//// FollowerList all users have same follower list
-//func FollowerList(c *gin.Context) {
-//	c.JSON(http.StatusOK, UserListResponse{
-//		Response: Response{
-//			StatusCode: 0,
-//		},
-//		UserList: []User{DemoUser},
-//	})
-//}
-//
-//// FriendList all users have same friend list
-//func FriendList(c *gin.Context) {
-//	c.JSON(http.StatusOK, UserListResponse{
-//		Response: Response{
-//			StatusCode: 0,
-//		},
-//		UserList: []User{DemoUser},
-//	})
-//}
+import (
+	"Minimalist_TikTok/pkg/util"
+	"Minimalist_TikTok/service"
+	"github.com/gin-gonic/gin"
+)
+
+// RelationAction no practical effect, just check if token is valid
+func RelationAction(c *gin.Context) {
+	var relationActionService service.RelationActionService
+	if err := c.ShouldBind(&relationActionService); err == nil {
+		res := relationActionService.RelationAction()
+		c.JSON(200, res)
+	} else {
+		c.JSON(400, ErrorResponse(err))
+		util.LogrusObj.Info(err)
+	}
+}
+
+// // FollowList all users have same follow list
+func FollowList(c *gin.Context) {
+	var followservice service.FollowService
+	if err := c.ShouldBind(&followservice); err == nil {
+		res := followservice.FollowList()
+		c.JSON(200, res)
+	} else {
+		c.JSON(400, ErrorResponse(err))
+		util.LogrusObj.Info(err)
+	}
+}
+
+// FollowerList all users have same follower list
+func FollowerList(c *gin.Context) {
+	var followerservice service.FollowService
+	if err := c.ShouldBind(&followerservice); err == nil {
+		res := followerservice.FollowerList()
+		c.JSON(200, res)
+	} else {
+		c.JSON(400, ErrorResponse(err))
+		util.LogrusObj.Info(err)
+	}
+}
+
+// FriendList all users have same friend list
+func FriendList(c *gin.Context) {
+	var friendservice service.FollowService
+	if err := c.ShouldBind(&friendservice); err == nil {
+		res := friendservice.FriendList()
+		c.JSON(200, res)
+	} else {
+		c.JSON(400, ErrorResponse(err))
+		util.LogrusObj.Info(err)
+	}
+}
