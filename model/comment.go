@@ -2,7 +2,7 @@ package model
 
 type Comment struct {
 	ID         uint   `json:"id"`
-	User       User   `json:"user"`
+	Commenter  User   `json:"commenter"`
 	UserID     uint   `json:"user_id"`
 	Video      Video  `json:"video"`
 	VideoID    uint   `json:"video_id"`

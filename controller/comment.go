@@ -19,13 +19,13 @@ func CommentAction(c *gin.Context) {
 }
 
 // CommentList all videos have same demo comment list
-//func CommentList(c *gin.Context) {
-//	var commentService service.CommentService
-//	if err := c.ShouldBind(&commentService); err == nil {
-//		res := commentService.CommentList()
-//		c.JSON(200, res)
-//	} else {
-//		c.JSON(400, ErrorResponse(err))
-//		util.LogrusObj.Info(err)
-//	}
-//}
+func CommentList(c *gin.Context) {
+	var commentService service.CommentListService
+	if err := c.ShouldBind(&commentService); err == nil {
+		res := commentService.CommentList()
+		c.JSON(200, res)
+	} else {
+		c.JSON(400, ErrorResponse(err))
+		util.LogrusObj.Info(err)
+	}
+}
