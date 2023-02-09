@@ -98,7 +98,7 @@ func (service *PublishListService) PublishList() serializer.FeedResponse {
 		videos[i].PlayUrl = util.AndroidBeforeUrl + videos[i].PlayUrl
 		videos[i].CoverUrl = util.AndroidBeforeUrl + videos[i].CoverUrl
 	}
-	fmt.Println("data", videos)
+	//fmt.Println("data", videos)
 	return serializer.FeedResponse{
 		StatusCode: 0,
 		StatusMsg:  "获取列表成功",
