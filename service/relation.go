@@ -204,13 +204,13 @@ func (service *FollowService) FriendList() serializer.FollowListResponse {
 			StatusMsg:  "查询follow数据库错误",
 		}
 	}
-	var friendslist_half []model.User
+	var friendslist_half_index []uint
 	for _, v := range friends_half {
-		friendslist_half = append(friendslist_half, v.Follow)
+		friendslist_half_index = append(friendslist_half_index, v.FollowerID)
 	}
 
 	var half_friends []model.Follow
-	err = model.DB.Model(&model.Follow{}).Preload("Follower").Where("follow_id = ?", service.UserID).Find(&half_friends).Error
+	err = model.DB.Model(&model.Follow{}).Preload("Follower").Where("follower_id = ?", service.UserID).Find(&half_friends).Error
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.FollowListResponse{
@@ -218,18 +218,24 @@ func (service *FollowService) FriendList() serializer.FollowListResponse {
 			StatusMsg:  "查询follow数据库错误",
 		}
 	}
-	var half_friendslist []model.User
+	var half_friendslist_index []uint
 	for _, v := range half_friends {
-		half_friendslist = append(half_friendslist, v.Follower)
+		half_friendslist_index = append(half_friendslist_index, v.FollowID)
 	}
 
-	friendslist := IntersectArray(half_friendslist, friendslist_half)
+	friendslistindex := IntersectArray(friendslist_half_index, half_friendslist_index)
+	fmt.Println("friendslist_half_index", friendslist_half_index)
+	fmt.Println("half_friendslist_index", half_friendslist_index)
+	fmt.Println("friendslistindex", friendslistindex)
 
+	var friendslist []model.User
+	model.DB.Model(&model.User{}).Where("id in (?)", friendslistindex).Find(&friendslist)
 	//
 	//var followerslist []model.User
 	//for _,v := range followers{
 	//	followerslist = append(followerslist, v.Follow)
 	//}
+	fmt.Println(friendslist)
 
 	return serializer.FollowListResponse{
 		StatusCode: 0,
@@ -238,19 +244,17 @@ func (service *FollowService) FriendList() serializer.FollowListResponse {
 	}
 }
 
-func IntersectArray(a []model.User, b []model.User) []model.User {
-	var inter []model.User
-	mp := make(map[model.User]bool)
+func IntersectArray(a []uint, b []uint) []uint {
+	var inter []uint
+	mp := make(map[uint]bool)
 
 	for _, s := range a {
-		fmt.Println(s)
 		if _, ok := mp[s]; !ok {
 			mp[s] = true
 		}
 	}
 	for _, s := range b {
 		if _, ok := mp[s]; ok {
-			fmt.Println("2122", s)
 			inter = append(inter, s)
 		}
 	}
