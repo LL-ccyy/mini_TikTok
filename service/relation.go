@@ -31,8 +31,8 @@ func (service *RelationActionService) RelationAction() serializer.Response {
 	fmt.Println("from_user_id=", claims.Id)
 
 	follow := model.Follow{
-		FollowID:   claims.Id,
-		FollowerID: uint(service.ToUserID),
+		FollowID:   uint(service.ToUserID),
+		FollowerID: claims.Id,
 	}
 	switch service.ActionType {
 	case "1":
@@ -114,6 +114,11 @@ func (service *RelationActionService) RelationAction() serializer.Response {
 	}
 }
 
+// A follow B
+// A 粉丝 follower
+// B 偶像 follow
+// FollowList 关注列表
+// FollowerList 粉丝列表
 func (service *FollowService) FollowList() serializer.FollowListResponse {
 	claims, err := util.ParseToken(service.Token)
 	if err != nil {
@@ -126,7 +131,7 @@ func (service *FollowService) FollowList() serializer.FollowListResponse {
 	fmt.Println("from_user_id=", claims.Id)
 
 	var follows []model.Follow
-	err = model.DB.Model(&model.Follow{}).Preload("Follow").Where("follow_id = ?", service.UserID).Find(&follows).Error
+	err = model.DB.Model(&model.Follow{}).Preload("Follower").Where("follower_id = ?", service.UserID).Find(&follows).Error
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.FollowListResponse{
@@ -158,7 +163,7 @@ func (service *FollowService) FollowerList() serializer.FollowListResponse {
 	}
 
 	var followers []model.Follow
-	err = model.DB.Model(&model.Follow{}).Preload("Follower").Where("follower_id = ?", service.UserID).Find(&followers).Error
+	err = model.DB.Model(&model.Follow{}).Preload("Follow").Where("follow_id = ?", service.UserID).Find(&followers).Error
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.FollowListResponse{
@@ -169,7 +174,7 @@ func (service *FollowService) FollowerList() serializer.FollowListResponse {
 
 	var followerslist []model.User
 	for _, v := range followers {
-		followerslist = append(followerslist, v.Follow)
+		followerslist = append(followerslist, v.Follower)
 	}
 
 	return serializer.FollowListResponse{
@@ -190,15 +195,36 @@ func (service *FollowService) FriendList() serializer.FollowListResponse {
 		}
 	}
 
-	//var followers []model.Follow
-	//err = model.DB.Model(&model.Follow{}).Preload("Follower").Where("follower_id = ?",service.UserID).Find(&followers).Error
-	//if err != nil {
-	//	util.LogrusObj.Info(err)
-	//	return serializer.FollowListResponse{
-	//		StatusCode: 1,
-	//		StatusMsg:  "查询follow数据库错误",
-	//	}
-	//}
+	var friends_half []model.Follow
+	err = model.DB.Model(&model.Follow{}).Preload("Follow").Where("follow_id = ?", service.UserID).Find(&friends_half).Error
+	if err != nil {
+		util.LogrusObj.Info(err)
+		return serializer.FollowListResponse{
+			StatusCode: 1,
+			StatusMsg:  "查询follow数据库错误",
+		}
+	}
+	var friendslist_half []model.User
+	for _, v := range friends_half {
+		friendslist_half = append(friendslist_half, v.Follow)
+	}
+
+	var half_friends []model.Follow
+	err = model.DB.Model(&model.Follow{}).Preload("Follower").Where("follow_id = ?", service.UserID).Find(&half_friends).Error
+	if err != nil {
+		util.LogrusObj.Info(err)
+		return serializer.FollowListResponse{
+			StatusCode: 1,
+			StatusMsg:  "查询follow数据库错误",
+		}
+	}
+	var half_friendslist []model.User
+	for _, v := range half_friends {
+		half_friendslist = append(half_friendslist, v.Follower)
+	}
+
+	friendslist := IntersectArray(half_friendslist, friendslist_half)
+
 	//
 	//var followerslist []model.User
 	//for _,v := range followers{
@@ -207,7 +233,26 @@ func (service *FollowService) FriendList() serializer.FollowListResponse {
 
 	return serializer.FollowListResponse{
 		StatusCode: 0,
-		//StatusMsg:  "查询关注列表成功",
-		//UserList: followerslist,
+		StatusMsg:  "查询朋友列表成功",
+		UserList:   friendslist,
 	}
+}
+
+func IntersectArray(a []model.User, b []model.User) []model.User {
+	var inter []model.User
+	mp := make(map[model.User]bool)
+
+	for _, s := range a {
+		fmt.Println(s)
+		if _, ok := mp[s]; !ok {
+			mp[s] = true
+		}
+	}
+	for _, s := range b {
+		if _, ok := mp[s]; ok {
+			fmt.Println("2122", s)
+			inter = append(inter, s)
+		}
+	}
+	return inter
 }
