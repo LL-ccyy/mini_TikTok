@@ -2,18 +2,18 @@ package main
 
 import (
 	"Minimalist_TikTok/config"
+	//"Minimalist_TikTok/service"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func main() {
 	config.Init()
-	//go service.RunMessageServer()
+	//go service.Manager.Start()
 
 	r := gin.Default()
 
 	initRouter(r)
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
-	http.ListenAndServe(":39090", nil)
+
 }
