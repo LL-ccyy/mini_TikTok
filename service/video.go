@@ -5,6 +5,7 @@ import (
 	"Minimalist_TikTok/pkg/util"
 	"Minimalist_TikTok/serializer"
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"strconv"
 	"time"
 )
@@ -74,6 +75,14 @@ func Publish(User model.User, Uid uint, PlayUrl string, CoverUrl string, Title s
 			StatusCode: 1,
 			StatusMsg:  "投稿失败",
 			Error:      err.Error(),
+		}
+	}
+	err = model.DB.Model(&model.User{}).Where("id = ?", Uid).Update("work_count", gorm.Expr("work_count + ?", 1)).Error
+	if err != nil {
+		util.LogrusObj.Info(err)
+		return serializer.Response{
+			StatusCode: 1,
+			StatusMsg:  "work_count+1操作失败",
 		}
 	}
 	return serializer.Response{

@@ -17,12 +17,12 @@ func initRouter(r *gin.Engine) {
 	apiRouter.GET("/feed/", controller.Feed)
 	apiRouter.POST("/user/register/", controller.Register)
 	apiRouter.POST("/user/login/", controller.Login)
-	apiRouter.GET("/user/", controller.UserInfo)
 	apiRouter.POST("/publish/action/", controller.Publish)
 	apiRouter.GET("/comment/list/", controller.CommentList)
 
 	apiRouter.Use(middleware.JWT())
 	{
+		apiRouter.GET("/user/", controller.UserInfo)
 		apiRouter.GET("/publish/list/", controller.PublishList)
 
 		// extra apis - I

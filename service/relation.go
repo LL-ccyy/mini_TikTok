@@ -131,7 +131,7 @@ func (service *FollowService) FollowList() serializer.FollowListResponse {
 	fmt.Println("from_user_id=", claims.Id)
 
 	var follows []model.Follow
-	err = model.DB.Model(&model.Follow{}).Preload("Follower").Where("follower_id = ?", service.UserID).Find(&follows).Error
+	err = model.DB.Model(&model.Follow{}).Preload("Follower").Preload("Follow").Where("follower_id = ?", service.UserID).Find(&follows).Error
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.FollowListResponse{
@@ -145,6 +145,7 @@ func (service *FollowService) FollowList() serializer.FollowListResponse {
 		followslist = append(followslist, v.Follow)
 	}
 
+	fmt.Println("followslist", follows[0].Follow)
 	return serializer.FollowListResponse{
 		StatusCode: 0,
 		StatusMsg:  "查询关注列表成功",
@@ -163,7 +164,7 @@ func (service *FollowService) FollowerList() serializer.FollowListResponse {
 	}
 
 	var followers []model.Follow
-	err = model.DB.Model(&model.Follow{}).Preload("Follow").Where("follow_id = ?", service.UserID).Find(&followers).Error
+	err = model.DB.Model(&model.Follow{}).Preload("Follower").Preload("Follow").Where("follow_id = ?", service.UserID).Find(&followers).Error
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.FollowListResponse{
@@ -196,7 +197,7 @@ func (service *FollowService) FriendList() serializer.FollowListResponse {
 	}
 
 	var friends_half []model.Follow
-	err = model.DB.Model(&model.Follow{}).Preload("Follow").Where("follow_id = ?", service.UserID).Find(&friends_half).Error
+	err = model.DB.Model(&model.Follow{}).Preload("Follower").Preload("Follow").Where("follow_id = ?", service.UserID).Find(&friends_half).Error
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.FollowListResponse{
@@ -210,7 +211,7 @@ func (service *FollowService) FriendList() serializer.FollowListResponse {
 	}
 
 	var half_friends []model.Follow
-	err = model.DB.Model(&model.Follow{}).Preload("Follower").Where("follower_id = ?", service.UserID).Find(&half_friends).Error
+	err = model.DB.Model(&model.Follow{}).Preload("Follower").Preload("Follow").Where("follower_id = ?", service.UserID).Find(&half_friends).Error
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.FollowListResponse{

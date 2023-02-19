@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
+	"log"
 	"time"
 )
 
@@ -30,23 +30,37 @@ func InsertMsg(database string, id string, content string, read uint, expire int
 }
 
 func FindMany(database, sendID, id string, time int64, pageSize int) (results []websocket.Result, err error) {
-	//fil:=bson.D{{"read",
-	//	bson.D{{
-	//		"$in",
-	//		bson.A{0, 1},
-	//	}},}}
+	fil := bson.D{{"read",
+		bson.D{{
+			"$in",
+			bson.A{0, 1},
+		}}}}
 	var resultMe []websocket.Trainer  //ID
 	var resultYou []websocket.Trainer //sendID
 	sendIDCollection := config.MongoDBClient.Database(database).Collection(sendID)
 	idCollection := config.MongoDBClient.Database(database).Collection(id)
 	fmt.Println("idCollection", idCollection)
-	sendIDTimeCurcor, err := sendIDCollection.Find(context.TODO(), bson.D{{}},
-		options.Find().SetSort(bson.D{{"startTime", -1}}), options.Find().SetLimit(int64(pageSize)))
+	sendIDTimeCurcor, err := sendIDCollection.Find(context.TODO(), fil,
+		options.Find().SetSort(bson.D{{"startTime", 1}}), options.Find().SetLimit(int64(pageSize)))
 
 	/*.options.Find()SetSort(bson.D{{"startTime",-1}}),
 	options.Find().SetLimit(int64(pageSize))*/
-	idTimeCurcor, err := idCollection.Find(context.TODO(), bson.D{{}},
-		options.Find().SetSort(bson.D{{"startTime", -1}}), options.Find().SetLimit(int64(pageSize)))
+	idTimeCurcor, err := idCollection.Find(context.TODO(), fil,
+		options.Find().SetSort(bson.D{{"startTime", 1}}), options.Find().SetLimit(int64(pageSize)))
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"read", "2"}},
+		}}
+	_, err = sendIDCollection.UpdateMany(context.TODO(), fil, update)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//_, err = idCollection.UpdateMany(context.TODO(), fil, update)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
 	fmt.Println("idTimeCurcor", idTimeCurcor)
 	err = sendIDTimeCurcor.All(context.TODO(), &resultYou)
@@ -60,19 +74,19 @@ func FindMany(database, sendID, id string, time int64, pageSize int) (results []
 }
 
 func AppendAndSort(resultMe, resultYou []websocket.Trainer) (results []websocket.Result, err error) {
-	for _, r := range resultMe {
-		sendSort := SendSortMsg{
-			Content:  r.Content,
-			Read:     string(r.Read),
-			CreateAt: r.StartTime,
-		}
-		result := websocket.Result{
-			StartTime: r.StartTime,
-			Msg:       fmt.Sprintf("%v", sendSort),
-			From:      "me",
-		}
-		results = append(results, result)
-	}
+	//for _, r := range resultMe {
+	//	sendSort := SendSortMsg{
+	//		Content:  r.Content,
+	//		Read:     string(r.Read),
+	//		CreateAt: r.StartTime,
+	//	}
+	//	result := websocket.Result{
+	//		StartTime: r.StartTime,
+	//		Msg:       fmt.Sprintf("%v", sendSort),
+	//		From:      "me",
+	//	}
+	//	results = append(results, result)
+	//}
 	for _, r := range resultYou {
 		sendSort := SendSortMsg{
 			Content:  r.Content,

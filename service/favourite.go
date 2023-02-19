@@ -57,6 +57,14 @@ func (service *FavouriteActionService) FavouriteAction() serializer.Response {
 					StatusMsg:  "视频喜欢+1操作失败",
 				}
 			}
+			err = model.DB.Model(&model.User{}).Where("id = ?", claims.Id).Update("favorite_count", gorm.Expr("favorite_count + ?", 1)).Error
+			if err != nil {
+				util.LogrusObj.Info(err)
+				return serializer.Response{
+					StatusCode: 1,
+					StatusMsg:  "用户喜欢+1操作失败",
+				}
+			}
 			return serializer.Response{
 				StatusCode: 0,
 				StatusMsg:  "喜欢成功",
@@ -78,6 +86,14 @@ func (service *FavouriteActionService) FavouriteAction() serializer.Response {
 				return serializer.Response{
 					StatusCode: 1,
 					StatusMsg:  "视频喜欢-1操作失败",
+				}
+			}
+			err = model.DB.Model(&model.User{}).Where("id = ?", claims.Id).Update("favorite_count", gorm.Expr("favorite_count - ?", 1)).Error
+			if err != nil {
+				util.LogrusObj.Info(err)
+				return serializer.Response{
+					StatusCode: 1,
+					StatusMsg:  "用户喜欢-1操作失败",
 				}
 			}
 			return serializer.Response{

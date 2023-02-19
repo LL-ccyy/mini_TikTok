@@ -62,6 +62,7 @@ func (service *MessageActionService) MessageAction() serializer.Response {
 }
 
 func (service *MessageChatService) MessageChat() serializer.ChatRecordResponse {
+
 	token := service.Token
 	claims, err := util.ParseToken(token)
 	if err != nil {
@@ -113,7 +114,8 @@ func (service *MessageChatService) MessageChat() serializer.ChatRecordResponse {
 		tim, _ := strconv.Atoi(sep[2])
 		t := time.Unix(int64(tim), 0)
 		message.Id = int64(i + 1)
-		message.CreateTime = t.Format("03:04 PM")
+		fmt.Println(t.Format("03:04 PM"))
+		message.CreateTime = sep[2]
 		//message.CreateTime=sep[2]
 		message.Content = sep[0]
 		if from == "you" {
