@@ -59,10 +59,13 @@ func (service *CommentActionService) CommentAction() serializer.CommentVResponse
 				CreateDate:  time.Now().Format("2006-01-02 15:04:05"),
 				//ID: service.CommentId,????
 			}
-			//var user model.User
-			//var video model.Video
+
+			var video model.Video
 			//model.DB.Model(&model.User{}).Where("id = ?",claims.Id).Find(&user)
-			//model.DB.Model(&model.Video{}).Where("id = ?",service.VideoId).Find(&video)
+			model.DB.Model(&model.Video{}).Preload("Author").Where("id = ?", service.VideoId).Find(&video)
+			comment.Video = video
+			fmt.Printf("%+v", video)
+
 			err = model.DB.Model(&model.Comment{}).Create(&comment).Error
 			if err != nil {
 				util.LogrusObj.Info(err)
@@ -86,7 +89,8 @@ func (service *CommentActionService) CommentAction() serializer.CommentVResponse
 				ID:          service.CommentId,
 			}
 
-			err = model.DB.Model(&model.Comment{}).Where("id = ? ", service.CommentId).Delete(&comment).Error
+			err = model.DB.Model(&model.Comment{}).Preload("Commenter").
+				Preload("Video").Preload("Video.Author").Where("id = ? ", service.CommentId).Delete(&comment).Error
 			if err != nil {
 				util.LogrusObj.Info(err)
 				return serializer.CommentVResponse{
