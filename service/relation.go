@@ -145,7 +145,12 @@ func (service *FollowService) FollowList() serializer.FollowListResponse {
 		followslist = append(followslist, v.Follow)
 	}
 
-	fmt.Println("followslist", follows[0].Follow)
+	for j := 0; j < len(followslist); j++ {
+		var count int
+		model.DB.Model(&model.Follow{}).Where("follow_id = ? And follower_id = ? ", followslist[j].ID, claims.Id).Count(&count)
+		followslist[j].IsFollow = (count == 1)
+	}
+
 	return serializer.FollowListResponse{
 		StatusCode: 0,
 		StatusMsg:  "查询关注列表成功",
@@ -154,7 +159,7 @@ func (service *FollowService) FollowList() serializer.FollowListResponse {
 }
 
 func (service *FollowService) FollowerList() serializer.FollowListResponse {
-	_, err := util.ParseToken(service.Token)
+	claims, err := util.ParseToken(service.Token)
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.FollowListResponse{
@@ -176,6 +181,12 @@ func (service *FollowService) FollowerList() serializer.FollowListResponse {
 	var followerslist []model.User
 	for _, v := range followers {
 		followerslist = append(followerslist, v.Follower)
+	}
+
+	for j := 0; j < len(followerslist); j++ {
+		var count int
+		model.DB.Model(&model.Follow{}).Where("follow_id = ? And follower_id = ? ", followerslist[j].ID, claims.Id).Count(&count)
+		followerslist[j].IsFollow = (count == 1)
 	}
 
 	return serializer.FollowListResponse{

@@ -121,7 +121,7 @@ func (service *CommentListService) CommentList() serializer.CommentListResponse 
 		}
 	}
 
-	err = model.DB.Model(&model.Comment{}).Preload("Commenter").Where("video_id = ?", service.VideoID).Find(&commentsList).Error
+	err = model.DB.Model(&model.Comment{}).Preload("Commenter").Preload("Video").Preload("Video.Author").Where("video_id = ?", service.VideoID).Find(&commentsList).Error
 	if err != nil {
 		util.LogrusObj.Info(err)
 		return serializer.CommentListResponse{

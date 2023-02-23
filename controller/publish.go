@@ -14,6 +14,7 @@ import (
 func Publish(c *gin.Context) {
 	var publishservice service.PublishService
 	token := c.PostForm("token")
+	fmt.Println("token=", token)
 	claim, err := util.ParseToken(token)
 	//claim, _ := util.ParseToken(c.GetHeader("Authorization"))
 	if err != nil {
